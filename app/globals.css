@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+:root {
+  --gold: #C8A84B;
+  --gold-dim: #8A6F2E;
+  --blue-dark: #0A0E1A;
+  --blue-mid: #0D1426;
+  --blue-panel: #111827;
+  --blue-border: #1E2D4A;
+  --text-primary: #E8DCC8;
+  --text-secondary: #8B9BB4;
+  --red: #E05252;
+  --orange: #E07B2A;
+  --green: #4CAF74;
+}
+
+body {
+  background-color: var(--blue-dark);
+  color: var(--text-primary);
+  font-family: 'Sora', 'Inter', sans-serif;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(224, 82, 82, 0.4); }
+  50% { box-shadow: 0 0 18px rgba(224, 82, 82, 0.8); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-enter {
+  animation: fade-in 0.25s ease forwards;
+}
+
+.urgent {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
