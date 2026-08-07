@@ -1,22 +1,11 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-
-type Tier = "Diamond" | "Master" | "Grandmaster" | "Challenger";
-type Server =
-  | "EUW" | "EUNE" | "NA" | "KR" | "BR" | "LAN" | "LAS"
-  | "TR" | "RU" | "OCE" | "JP" | "ME" | "SEA" | "TW" | "VN";
-
-interface Account {
-  id: string;
-  riotId: string;
-  server: Server;
-  tier: Tier;
-  decayDate: string; // ISO date string
-  note?: string;
-  createdAt: string;
-  lastUpdated: string;
-}
+import { useState } from "react";
+import { useAccounts } from "@/lib/hooks/useAccounts";
+import { ImportBanner } from "@/app/components/ImportBanner";
+import type { Account, Tier, Server } from "@/lib/types/account";
+import { AuthStatus } from "@/app/components/AuthStatus";
+import { rankIcon } from "@/lib/rankIcon";
 
 const DECAY_INTERVAL: Record<Tier, number> = {
   Diamond: 28,
@@ -80,29 +69,22 @@ function tierColor(tier: Tier): string {
 }
 
 export default function Home() {
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  const { accounts,
+    persist,
+    loading,
+    importAvailable,
+    importing,
+    confirmImport,
+    dismissImport, } = useAccounts();
+
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<"urgency" | "name">("urgency");
-
-  // Form state
   const [riotId, setRiotId] = useState("");
   const [server, setServer] = useState<Server>("EUW");
   const [tier, setTier] = useState<Tier>("Diamond");
   const [daysLeft, setDaysLeft] = useState("");
   const [note, setNote] = useState("");
-
-  useEffect(() => {
-    const stored = localStorage.getItem("lol-decay-accounts");
-    if (stored) {
-      try { setAccounts(JSON.parse(stored)); } catch {}
-    }
-  }, []);
-
-  const persist = useCallback((accs: Account[]) => {
-    setAccounts(accs);
-    localStorage.setItem("lol-decay-accounts", JSON.stringify(accs));
-  }, []);
 
   function resetForm() {
     setRiotId(""); setServer("EUW"); setTier("Diamond");
@@ -237,10 +219,11 @@ export default function Home() {
             + Add account
           </button>
         </div>
+        <AuthStatus />
       </div>
 
       {/* Content */}
-      <div style={{ maxWidth: 820, margin: "0 auto", padding: "28px 20px" }}>
+      <div style={{ maxWidth: 1000, margin: "0 auto", padding: "28px 20px" }}>
 
         {/* Empty state */}
         {accounts.length === 0 && !showForm && (
@@ -297,9 +280,35 @@ export default function Home() {
                   background: color, flexShrink: 0,
                 }} />
 
+                {/* Rank Emblem (Fixed 52x52 box on the left) */}
+                <div style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: 10,
+                  //background: "rgba(0, 0, 0, 0.2)",
+                  //border: "1px solid var(--blue-border)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={rankIcon(acc.tier)}
+                    alt={acc.tier}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "contain",
+                      transform: "scale(4)", // Zoomne ikonku bez rozhadzovania okrajov
+                    }}
+                  />
+                </div>
+
                 {/* Main info */}
                 <div style={{ flex: 1, minWidth: 160 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
                     <span style={{ fontSize: 15, fontWeight: 600, color: "var(--text-primary)" }}>
                       {acc.riotId}
                     </span>
@@ -548,6 +557,20 @@ export default function Home() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {importAvailable && (
+        <ImportBanner
+          importing={importing}
+          onConfirm={confirmImport}
+          onDismiss={dismissImport}
+        />
+      )}
+
+      {loading && (
+        <div style={{ padding: "24px 32px", color: "var(--text-secondary)", fontSize: 13 }}>
+          Loading accounts...
         </div>
       )}
     </div>
