@@ -30,8 +30,8 @@ export default function ResetPasswordPage() {
     setServerError(null);
     setSubmitting(true);
 
-    // V tomto bode uz je user docasne prihlaseny cez "recovery" session,
-    // ktoru vytvoril /auth/callback vymenou tokenu z emailu
+    // At this point the user is temporarily signed in via a "recovery"
+    // session, created by /auth/callback exchanging the token from the email
     const { error } = await supabase.auth.updateUser({
       password: data.password,
     });
@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
 
     if (error) {
       setServerError(
-        "Nepodarilo sa zmeniť heslo. Skús požiadať o nový link."
+        "Couldn't update your password. Please request a new link."
       );
       return;
     }
@@ -54,9 +54,9 @@ export default function ResetPasswordPage() {
   if (done) {
     return (
       <div className="max-w-sm mx-auto mt-24 text-center px-4">
-        <h1 className="text-xl font-semibold mb-2">Heslo zmenené</h1>
+        <h1 className="text-xl font-semibold mb-2">Password updated</h1>
         <p className="text-sm text-neutral-400">
-          Presmerúvam ťa na prihlásenie...
+          Redirecting you to login...
         </p>
       </div>
     );
@@ -64,12 +64,12 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="max-w-sm mx-auto mt-24 px-4">
-      <h1 className="text-xl font-semibold mb-6">Nastav nové heslo</h1>
+      <h1 className="text-xl font-semibold mb-6">Set a new password</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <div>
           <label className="block text-sm mb-1" htmlFor="password">
-            Nové heslo
+            New password
           </label>
           <input
             id="password"
@@ -85,7 +85,7 @@ export default function ResetPasswordPage() {
 
         <div>
           <label className="block text-sm mb-1" htmlFor="confirmPassword">
-            Potvrď nové heslo
+            Confirm new password
           </label>
           <input
             id="confirmPassword"
@@ -108,7 +108,7 @@ export default function ResetPasswordPage() {
           disabled={submitting}
           className="w-full rounded bg-white text-black py-2 text-sm font-medium disabled:opacity-50"
         >
-          {submitting ? "Ukladám..." : "Zmeniť heslo"}
+          {submitting ? "Saving..." : "Update password"}
         </button>
       </form>
     </div>

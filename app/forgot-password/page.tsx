@@ -28,8 +28,8 @@ export default function ForgotPasswordPage() {
     setServerError(null);
     setSubmitting(true);
 
-    // redirectTo smeruje na /auth/callback, ktore vymeni token za session
-    // a presmeruje usera na /reset-password, kde si nastavi nove heslo
+    // redirectTo points to /auth/callback, which exchanges the token for a
+    // session and redirects the user to /reset-password to set a new password
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
       redirectTo: `${window.location.origin}/auth/callback?next=/reset-password`,
     });
@@ -37,23 +37,23 @@ export default function ForgotPasswordPage() {
     setSubmitting(false);
 
     if (error) {
-      // Generic sprava zamerne - nechceme prezradzovat, ci email v systeme existuje
-      setServerError("Niečo sa pokazilo. Skús to znova.");
+      // Deliberately generic - we don't want to reveal whether the email exists
+      setServerError("Something went wrong. Please try again.");
       return;
     }
 
-    // Zamerne rovnaka sprava aj ked email neexistuje - inak by sme
-    // utocnikovi umoznili zistovat, ktore emaily maju u nas ucet
+    // Same message even if the email doesn't exist - otherwise we'd let an
+    // attacker enumerate which emails have an account with us
     setSent(true);
   };
 
   if (sent) {
     return (
       <div className="max-w-sm mx-auto mt-24 text-center px-4">
-        <h1 className="text-xl font-semibold mb-2">Skontroluj svoj email</h1>
+        <h1 className="text-xl font-semibold mb-2">Check your email</h1>
         <p className="text-sm text-neutral-400">
-          Ak účet s týmto emailom existuje, poslali sme naň link na obnovenie
-          hesla.
+          If an account with that email exists, we&apos;ve sent a password
+          reset link to it.
         </p>
       </div>
     );
@@ -61,9 +61,9 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="max-w-sm mx-auto mt-24 px-4">
-      <h1 className="text-xl font-semibold mb-2">Zabudnuté heslo</h1>
+      <h1 className="text-xl font-semibold mb-2">Forgot password</h1>
       <p className="text-sm text-neutral-400 mb-6">
-        Zadaj svoj email a pošleme ti link na obnovenie hesla.
+        Enter your email and we&apos;ll send you a password reset link.
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -90,13 +90,13 @@ export default function ForgotPasswordPage() {
           disabled={submitting}
           className="w-full rounded bg-white text-black py-2 text-sm font-medium disabled:opacity-50"
         >
-          {submitting ? "Odosielam..." : "Poslať link na obnovenie"}
+          {submitting ? "Sending..." : "Send reset link"}
         </button>
       </form>
 
       <p className="text-xs text-neutral-500 mt-6 text-center">
         <a href="/login" className="underline">
-          Späť na prihlásenie
+          Back to login
         </a>
       </p>
     </div>

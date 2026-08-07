@@ -28,8 +28,8 @@ export function ImportBanner({
       }}
     >
       <div style={{ fontSize: 13, color: "var(--text-primary)" }}>
-        Našli sme účty uložené v tomto prehliadači. Chceš ich importovať do
-        svojho účtu?
+        We found accounts saved in this browser. Want to import them into
+        your account?
       </div>
       <div style={{ display: "flex", gap: 8 }}>
         <button
@@ -46,7 +46,7 @@ export function ImportBanner({
             cursor: "pointer",
           }}
         >
-          Nie, ďakujem
+          No thanks
         </button>
         <button
           onClick={onConfirm}
@@ -63,7 +63,7 @@ export function ImportBanner({
             opacity: importing ? 0.6 : 1,
           }}
         >
-          {importing ? "Importujem..." : "Importovať účty"}
+          {importing ? "Importing..." : "Import accounts"}
         </button>
       </div>
     </div>
