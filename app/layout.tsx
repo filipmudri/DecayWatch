@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "LoL Decay Tracker",
+  title: "DecayWatch",
   description: "Track ranked decay across all your League of Legends accounts",
 };
 
