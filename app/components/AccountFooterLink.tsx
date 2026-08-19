@@ -1,14 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 
 export function AccountFooterLink() {
   const router = useRouter();
   const supabase = createClient();
+  const [user, setUser] = useState<User | null>(null);
+  const [checked, setChecked] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setUser(data.user);
+      setChecked(true);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   const handleDeleteAccount = async () => {
     setDeleting(true);
@@ -21,6 +39,9 @@ export function AccountFooterLink() {
       alert("Failed to delete account, please try again.");
     }
   };
+
+  // Kým nevieme, či je user prihlásený, alebo prihlásený nie je, nič nerenderuj
+  if (!checked || !user) return null;
 
   if (confirming) {
     return (
