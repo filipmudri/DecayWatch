@@ -6,6 +6,7 @@ import { ImportBanner } from "@/app/components/ImportBanner";
 import type { Account, Tier, Server } from "@/lib/types/account";
 import { AuthStatus } from "@/app/components/AuthStatus";
 import { rankIcon } from "@/lib/rankIcon";
+import { AccountFooterLink } from "@/app/components/AccountFooterLink";
 
 const DECAY_INTERVAL: Record<Tier, number> = {
   Diamond: 28,
@@ -407,6 +408,13 @@ export default function Home() {
             <span>🏆 Challenger — Loses <b style={{color:"#C8A84B"}}>75 LP/day</b> once banked days hit 0 (1 match = 1 banked day, max 14)</span>
           </div>
         )}
+      </div>
+
+      <div style={{
+        width: "100%", display: "flex", justifyContent: "flex-end",
+        padding: "0 32px 24px",
+      }}>
+        <AccountFooterLink />
       </div>
 
       {/* Modal / Form */}
