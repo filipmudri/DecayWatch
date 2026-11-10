@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { createClient } from "@/lib/supabase/client";
+import Link from "next/link";
+import { TERMS_VERSION } from "@/lib/legal";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -16,9 +18,11 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
+    defaultValues: { acceptTerms: false },
   });
 
   const onSubmit = async (data: RegisterInput) => {
@@ -28,6 +32,10 @@ export default function RegisterPage() {
     const { error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: { accepted_terms_version: TERMS_VERSION },
+      },
     });
 
     if (error) {
@@ -40,16 +48,23 @@ export default function RegisterPage() {
   };
 
   const handleGoogleSignUp = async () => {
-    await supabase.auth.signInWithOAuth({
+    if (!(await trigger("acceptTerms"))) return;
+    setServerError(null);
+    setSubmitting(true);
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
+    if (error) {
+      setServerError("Google sign-in failed. Please try again.");
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="max-w-sm mx-auto mt-24 px-4">
+    <div className="auth-page max-w-sm mx-auto mt-24 px-4">
       <h1 className="text-xl font-semibold mb-6">Create an Account</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -103,7 +118,18 @@ export default function RegisterPage() {
           )}
         </div>
 
-        {serverError && <p className="text-red-500 text-sm">{serverError}</p>}
+        <div>
+          <label className="flex items-start gap-3 text-sm leading-6" htmlFor="acceptTerms">
+            <input id="acceptTerms" type="checkbox" {...register("acceptTerms")}
+              aria-invalid={!!errors.acceptTerms} aria-describedby={errors.acceptTerms ? "terms-error" : undefined}
+              className="mt-1.5 h-4 w-4 shrink-0 accent-[var(--gold)]" />
+            <span>I agree to the <Link href="/terms" target="_blank" rel="noopener noreferrer" className="underline">Terms &amp; Conditions</Link>.</span>
+          </label>
+          {errors.acceptTerms && <p id="terms-error" role="alert" className="text-red-500 text-xs mt-1">{errors.acceptTerms.message}</p>}
+          <p className="text-xs text-neutral-400 mt-2">See our <Link href="/privacy" target="_blank" rel="noopener noreferrer" className="underline">Privacy Policy</Link> for how we use your data. Google users confirm the terms after sign-in.</p>
+        </div>
+
+        {serverError && <p role="alert" className="text-red-500 text-sm">{serverError}</p>}
 
         <button
           type="submit"
@@ -118,7 +144,8 @@ export default function RegisterPage() {
 
       <button
         onClick={handleGoogleSignUp}
-        className="w-full rounded border border-neutral-700 py-2 text-sm"
+        disabled={submitting}
+        className="w-full rounded border border-neutral-700 py-2 text-sm disabled:opacity-50"
       >
         Continue with Google
       </button>

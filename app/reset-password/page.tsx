@@ -53,7 +53,7 @@ export default function ResetPasswordPage() {
 
   if (done) {
     return (
-      <div className="max-w-sm mx-auto mt-24 text-center px-4">
+      <div className="auth-page max-w-sm mx-auto mt-24 text-center px-4">
         <h1 className="text-xl font-semibold mb-2">Password updated</h1>
         <p className="text-sm text-neutral-400">
           Redirecting you to login...
@@ -63,7 +63,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-24 px-4">
+    <div className="auth-page max-w-sm mx-auto mt-24 px-4">
       <h1 className="text-xl font-semibold mb-6">Set a new password</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>

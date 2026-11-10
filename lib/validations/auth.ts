@@ -2,37 +2,38 @@ import { z } from "zod";
 
 export const registerSchema = z
   .object({
-    email: z.string().email("Neplatný formát emailu"),
-    password: z.string().min(8, "Heslo musí mať aspoň 8 znakov"),
+    email: z.string().email("Please enter a valid email address."),
+    password: z.string().min(8, "Password must be at least 8 characters long."),
     confirmPassword: z.string(),
+    acceptTerms: z.boolean().refine((value) => value, "Please accept the Terms & Conditions."),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Heslá sa nezhodujú",
+    message: "Passwords do not match.",
     path: ["confirmPassword"],
   });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 
 export const loginSchema = z.object({
-  email: z.string().email("Neplatný formát emailu"),
-  password: z.string().min(1, "Zadaj heslo"),
+  email: z.string().email("Please enter a valid email address."),
+  password: z.string().min(1, "Please enter your password."),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email("Neplatný formát emailu"),
+  email: z.string().email("Please enter a valid email address."),
 });
 
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 
 export const resetPasswordSchema = z
   .object({
-    password: z.string().min(8, "Heslo musí mať aspoň 8 znakov"),
+    password: z.string().min(8, "Password must be at least 8 characters long."),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Heslá sa nezhodujú",
+    message: "Passwords do not match.",
     path: ["confirmPassword"],
   });
 
