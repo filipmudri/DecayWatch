@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
 
   if (sent) {
     return (
-      <div className="max-w-sm mx-auto mt-24 text-center px-4">
+      <div className="auth-page max-w-sm mx-auto mt-24 text-center px-4">
         <h1 className="text-xl font-semibold mb-2">Check your email</h1>
         <p className="text-sm text-neutral-400">
           If an account with that email exists, we&apos;ve sent a password
@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="max-w-sm mx-auto mt-24 px-4">
+    <div className="auth-page max-w-sm mx-auto mt-24 px-4">
       <h1 className="text-xl font-semibold mb-2">Forgot password</h1>
       <p className="text-sm text-neutral-400 mb-6">
         Enter your email and we&apos;ll send you a password reset link.

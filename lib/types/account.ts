@@ -16,3 +16,13 @@ export interface Account {
   createdAt: string;
   lastUpdated: string;
 }
+
+export interface AccountStore {
+  accounts: Account[];
+  persist: (next: Account[], options?: { optimistic?: boolean }) => Promise<void>;
+  loading: boolean;
+  importAvailable: boolean;
+  importing: boolean;
+  confirmImport: () => Promise<void>;
+  dismissImport: () => void;
+}

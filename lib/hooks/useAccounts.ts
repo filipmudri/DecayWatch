@@ -85,8 +85,8 @@ export function useAccounts() {
   // 3) persist() - rovnake API ako predtym (posli cely novy zoznam),
   // len vnutri routuje na localStorage alebo Supabase
   const persist = useCallback(
-    async (next: Account[]) => {
-      setAccountsState(next);
+    async (next: Account[], options: { optimistic?: boolean } = {}) => {
+      if (options.optimistic !== false) setAccountsState(next);
 
       if (user) {
         await syncRemoteAccounts(supabase, user.id, previousRef.current, next);
@@ -95,6 +95,7 @@ export function useAccounts() {
       }
 
       previousRef.current = next;
+      if (options.optimistic === false) setAccountsState(next);
     },
     [user, supabase]
   );

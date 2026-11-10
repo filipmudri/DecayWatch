@@ -36,7 +36,7 @@ export default function LoginPage() {
     if (error) {
       // Zamerne generic sprava - nerozlisujeme "zly email" vs "zle heslo",
       // aby utocnik neschal zistovat, ktore emaily maju u nas ucet
-      setServerError("Nesprávny email alebo heslo.");
+      setServerError("Incorrect email or password.");
       return;
     }
 
@@ -45,16 +45,22 @@ export default function LoginPage() {
   };
 
   const handleGoogleLogin = async () => {
-    await supabase.auth.signInWithOAuth({
+    setServerError(null);
+    setSubmitting(true);
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
+    if (error) {
+      setServerError("Google sign-in failed. Please try again.");
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="max-w-sm mx-auto mt-24 px-4">
+    <div className="auth-page max-w-sm mx-auto mt-24 px-4">
       <h1 className="text-xl font-semibold mb-6">Log in</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -131,7 +137,8 @@ export default function LoginPage() {
 
       <button
         onClick={handleGoogleLogin}
-        className="w-full rounded border border-neutral-700 py-2 text-sm"
+        disabled={submitting}
+        className="w-full rounded border border-neutral-700 py-2 text-sm disabled:opacity-50"
       >
         Continue with Google
       </button>
